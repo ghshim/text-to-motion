@@ -1,0 +1,11 @@
+.vscode/
+__pycache__/
+*.py[cod]
+wandb
+
+*.log
+checkpoints
+dataset
+glove
+evaluator/Comp_v6_KLD005
+evaluator/text_mot_match
