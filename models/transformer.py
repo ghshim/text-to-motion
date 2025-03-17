@@ -2,8 +2,8 @@ import torch
 import torch.nn as nn
 import clip
 
-from networks.net.encoder import Encoder
-from networks.net.decoder import Decoder
+from models.net.encoder import Encoder
+from models.net.decoder import Decoder
 
 class MotionTransformer(nn.Module):
     def __init__(

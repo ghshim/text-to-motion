@@ -5,8 +5,8 @@ import torch.nn as nn
 from tqdm import tqdm
 
 from utils.train_utils import wandb_init
-from networks.transformer import MotionTransformer
-from networks.module.scheduler.CosineAnnealingWarmRestarts import CosineAnnealingWarmUpRestarts
+from models.transformer import MotionTransformer
+from models.module.scheduler.CosineAnnealingWarmRestarts import CosineAnnealingWarmUpRestarts
 from evaluator.eval_t2m import evaluate_transformer
 
 class T2MTransformerTrainer:
@@ -33,7 +33,7 @@ class T2MTransformerTrainer:
     
     def train(self, train_loader, eval_val_loader, eval_wrapper, plot_eval=None):
         debug_path_ = os.path.join(self.opt.debug_path, 'train')
-        os.makedirs(debug_path_)
+        os.makedirs(debug_path_, exist_ok=True)
 
         if self.opt.resume_path and os.path.exists(self.opt.resume_path):
             wandb_init("Text2Motion", config=self.opt, id=self.opt.name, resume='allow') # TODO: id setting
@@ -54,6 +54,11 @@ class T2MTransformerTrainer:
         #--------------------------------------------------#
         # Training Start !!
         #--------------------------------------------------#
+        if self.opt.resume_path and os.path.exists(self.opt.resume_path):
+            checkpoint = torch.load(self.opt.resume_path)
+            self.model.load_state_dict(checkpoint['model_state_dict'])
+            start_epoch = checkpoint['epoch'] 
+
         initial_eps = 1.0
         lambda_decay = 0.1
         for epoch in tqdm(range(start_epoch+1, num_epochs+1), desc='Train'):
@@ -134,8 +139,11 @@ class T2MTransformerTrainer:
             wandb.log({"Train Loss": train_loss, "Epsilon": eps, "Sample": sample, "Epoch": epoch})
 
             if epoch % 10 == 0:
-                torch.save(self.model.state_dict(), os.path.join(debug_path_, f'checkpoint_{epoch:03d}.pth'))
-        
+                torch.save({
+                    'epoch': epoch,
+                    'model_state_dict': self.model.state_dict()
+                }, os.path.join(debug_path_, f'checkpoint_{epoch:03d}.pth'))
+
         wandb.finish()
         torch.save(self.model.state_dict(), os.path.join(debug_path_, f'last.pt'))
         

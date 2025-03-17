@@ -1,8 +1,8 @@
 import torch
 import torch.nn as nn
 
-from networks.net.layers import DecoderLayer
-from networks.module.embedding.positional_encoding import PositionalEncoding
+from models.net.layers import DecoderLayer
+from models.module.embedding.positional_encoding import PositionalEncoding
 
 class Decoder(nn.Module):
     def __init__(self, dim_model, num_heads, dropout_p, num_layers):

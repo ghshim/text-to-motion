@@ -1,6 +1,6 @@
 import torch.nn as nn
 
-from networks.net.transformer.mha_utils import MultiheadAttentionStable
+from models.net.transformer.mha_utils import MultiheadAttentionStable
 
 
 class EncoderLayer(nn.Module):
